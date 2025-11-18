@@ -91,3 +91,35 @@ int print_an_int(va_list *args)
 	return (len);
 }
 
+/**
+ * print_binary - translates the numbers into binary
+ * @args: arguments
+ * Return: int length
+ */
+
+int print_binary(va_list *args)
+{
+	unsigned int n = va_arg(*args, unsigned int);
+	char digits[32];
+	int i = 0, j, len = 0;
+
+	if (n == 0)
+	{
+		write(1, "0", 1);
+		return (1);
+	}
+
+	while (n > 0)
+	{
+		digits[i] = (n % 2) + '0';
+		n = n / 2;
+		i++;
+	}
+	for (j = i - 1; j >= 0; j--)
+	{
+		write(1, &digits[j], 1);
+		len++;
+	}
+	return (len);
+}
+

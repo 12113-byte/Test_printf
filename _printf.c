@@ -8,6 +8,7 @@ specifier_t handlers[] = {
 	{ 's', print_a_str },
 	{ '%', print_special },
 	{ 'i', print_an_int },
+	{ 'b', print_binary },
 	{ 0, NULL }
 };
 
