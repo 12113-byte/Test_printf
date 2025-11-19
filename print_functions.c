@@ -7,11 +7,15 @@
  * @args: arguments
  * Return: 1 on success
  */
-int print_a_char(va_list *args)
+int print_a_char(va_list *args, char *buffer, int *buffer_counter)
 {
 	char c = va_arg(*args, int);
-
-	write(1, &c, 1);
+	buffer[*buffer_counter] = c;
+	(*buffer_counter)++;
+	if (*buffer_counter == 1024)
+	{
+		flush_buffer(buffer, buffer_counter);
+	}
 	return (1);
 }
 
@@ -20,20 +24,35 @@ int print_a_char(va_list *args)
  * @args: arguments
  * Return: string length
  */
-int print_a_str(va_list *args)
+int print_a_str(va_list *args, char *buffer, int *buffer_counter)
 {
+	int len = 0, i = 0;
 	char *s = va_arg(*args, char*);
-	int len = 0;
 
 	if (s == NULL)
 	{
-		s = "(null)";
+		while (i < 6)
+		{
+			buffer[*buffer_counter] = "(null)"[i];
+			(*buffer_counter)++;
+			i++;
+			len++;
+			if (*buffer_counter == 1024)
+			{
+				flush_buffer(buffer, &buffer_counter);
+			}
+		}
 	}
 	while (*s)
 	{
-		write(1, s, 1);
+		buffer[*buffer_counter] = *s;
+		(*buffer_counter)++;
 		s++;
 		len++;
+		if (*buffer_counter == 1024)
+		{
+			flush_buffer(buffer, &buffer_counter);
+		}
 	}
 	return (len);
 }
@@ -121,5 +140,14 @@ int print_binary(va_list *args)
 		len++;
 	}
 	return (len);
+}
+
+/**
+ * flush_buffer - prints all stored values
+ */
+void flush_buffer(char *buffer, int *buffer_counter)
+{
+	write(1, buffer, *buffer_counter);
+	*buffer_counter = 0;
 }
 

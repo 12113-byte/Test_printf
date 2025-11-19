@@ -7,7 +7,8 @@ specifier_t handlers[] = {
 	{ 'c', print_a_char },
 	{ 's', print_a_str },
 	{ '%', print_special },
-	{ 'i', print_an_int },
+	{ 'i', print_an_int_or_decimal },
+	{ 'd', print_an_int_or_decimal },
 	{ 'b', print_binary },
 	{ 0, NULL }
 };
@@ -21,7 +22,8 @@ specifier_t handlers[] = {
 int _printf(const char *format, ...)
 {
 	va_list args;
-	int counter = 0, i, found;
+	char buffer[1024];
+	int counter = 0, buffer_counter = 0, i, found;
 	char next;
 
 	va_start(args, format);
@@ -42,7 +44,7 @@ int _printf(const char *format, ...)
 			{
 				if (handlers[i].specifier == next)
 				{
-					counter += handlers[i].print_func(&args);
+					counter += handlers[i].print_func(&args, buffer, &buffer_counter);
 					found = 1;
 					break;
 				}
@@ -60,11 +62,18 @@ int _printf(const char *format, ...)
 		}
 		else
 		{
-			write(1, format, 1);
+			buffer[buffer_counter] = *format;
+			buffer_counter++;
+			if (buffer_counter == 1024)
+			{
+				flush_buffer(buffer, &buffer_counter);
+				buffer_counter = 0;
+			}
 			counter++;
 			format++;
 		}
 	}
+	flush_buffer(buffer, &buffer_counter);
 	va_end(args);
 	return (counter);
 }
