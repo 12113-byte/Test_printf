@@ -10,6 +10,7 @@ specifier_t handlers[] = {
 	{ 'i', print_an_int_or_decimal },
 	{ 'd', print_an_int_or_decimal },
 	{ 'b', print_binary },
+	{ 'S', print_string },
 	{ 0, NULL }
 };
 

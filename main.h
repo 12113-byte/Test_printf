@@ -1,4 +1,4 @@
-#ifndef MAIN_H
+i#ifndef MAIN_H
 #define MAIN_H
 #include <stdarg.h>
 
@@ -9,6 +9,7 @@ int print_special(va_list *args);
 int print_a_char(va_list *args);
 int print_an_int(va_list *args);
 int print_binary(va_list *args);
+int print_string(va_list *args);
 
 typedef struct specifier
 {

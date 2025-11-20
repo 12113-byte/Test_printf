@@ -184,3 +184,77 @@ void flush_buffer(char *buffer, int *buffer_counter)
 	*buffer_counter = 0;
 }
 
+/**
+ * print_string - prints a string with non priintable characters included
+ * @args: arguments
+ * Return:
+ */
+
+int print_string(va_list *args, char *buffer, int *buffer_counter)
+{
+	int len = 0, i = 0, firt_digit, second_digit;
+	unsigned char val;
+	char *s = va_arg(*args, char*);
+
+	if (s == NULL)
+	{
+		while (i < 6)
+		{
+			buffer[*buffer_counter] = "(null)"[i];
+			(*buffer_counter)++;
+			i++;
+			len++;
+			if (*buffer_counter == 1024)
+			{
+				flush_buffer(buffer, buffer_counter);
+			}
+		}
+	}
+	while (*s)
+	{
+		if (*s >= 32 && *s <= 126)
+		{
+		buffer[*buffer_counter] = *s;
+		(*buffer_counter)++;
+		s++;
+		len++;
+		if (*buffer_counter == 1024)
+		{
+			flush_buffer(buffer, buffer_counter);
+		}
+		}
+		else
+		{
+		buffer[*buffer_counter] = '\\';
+		(*buffer_counter)++;
+		buffer[*buffer_counter] = 'x';
+		(*buffer_counter)++;
+		val = (unsigned char)*s;
+		first_digit = val / 16;
+		buffer[*buffer_counter] = first_digit;
+		(*buffer_counter)++;
+		second_digit = val % 16;
+		buffer[*buffer_counter] = second_digit;
+		(*buffer_counter)++;
+		len++;
+		if (first_digit < 10)
+		{
+			first_char = '0' + first_digit;
+			buffer[*buffer_counter] = *s;
+			(*buffer_counter)++;
+		}
+		else (first_digit >= 10)
+		{
+			first_char = 'A' + (first_digit - 10);
+			buffer[*buffer_counter] = *s;
+			(*buffer_counter)++;
+		}
+		if (*buffer_counter == 1024)
+		{
+			flush_buffer(buffer, buffer_counter);
+		}
+		}
+	}
+	return (len);
+}
+
