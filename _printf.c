@@ -33,7 +33,7 @@ int _printf(const char *format, ...)
 		if (*format == '%')
 		{
 			next = *(format + 1);
-			
+
 			if (next == '\0')
 			{
 				return (-1);
@@ -55,7 +55,12 @@ int _printf(const char *format, ...)
 			}
 			else
 			{
-				write (1, format, 1);
+				buffer[buffer_counter] = *format;
+				buffer_counter++;
+				if (buffer_counter == 1024)
+				{
+					flush_buffer(buffer, &buffer_counter);
+				}
 				counter++;
 				format++;
 			}
@@ -67,7 +72,6 @@ int _printf(const char *format, ...)
 			if (buffer_counter == 1024)
 			{
 				flush_buffer(buffer, &buffer_counter);
-				buffer_counter = 0;
 			}
 			counter++;
 			format++;
