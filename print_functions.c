@@ -39,7 +39,7 @@ int print_a_str(va_list *args, char *buffer, int *buffer_counter)
 			len++;
 			if (*buffer_counter == 1024)
 			{
-				flush_buffer(buffer, &buffer_counter);
+				flush_buffer(buffer, buffer_counter);
 			}
 		}
 	}
@@ -51,7 +51,7 @@ int print_a_str(va_list *args, char *buffer, int *buffer_counter)
 		len++;
 		if (*buffer_counter == 1024)
 		{
-			flush_buffer(buffer, &buffer_counter);
+			flush_buffer(buffer, buffer_counter);
 		}
 	}
 	return (len);
@@ -62,10 +62,15 @@ int print_a_str(va_list *args, char *buffer, int *buffer_counter)
 * @args: arguments
 * Return: 1 on success
 */
-int print_special(va_list *args)
+int print_special(va_list *args, char *buffer, int *buffer_counter)
 {
 	(void)args;
-	write(1, "%", 1);
+	buffer[*buffer_counter] = '%';
+	(*buffer_counter)++;
+	if (*buffer_counter == 1024)
+	{
+		flush_buffer(buffer, buffer_counter);
+	}
 	return (1);
 }
 
@@ -75,24 +80,35 @@ int print_special(va_list *args)
  * Return: int length
  */
 
-int print_an_int(va_list *args)
+int print_an_int_or_decimal(va_list *args, char *buffer, int *buffer_counter)
 {
 	int number = va_arg(*args, int);
-	char digits[12];
+	char digits[sizeof(int) * 8 + 2];
 	int i = 0, j, len = 0;
 	long n = number;
 
 	if (number == 0)
 	{
-		write(1, "0", 1);
-		return (1);
+		buffer[*buffer_counter] = '0';
+		(*buffer_counter)++;
+		if (*buffer_counter == 1024)
+		{
+			flush_buffer(buffer, buffer_counter);
+		}
+		len++;
+		return (len);
 	}
 
 	if (n < 0)
 	{
-		write(1, "-", 1);
-		len++;
+		buffer[*buffer_counter] = '-';
+		(*buffer_counter)++;
 		n = -n;
+		len++;
+		if (*buffer_counter == 1024)
+		{
+			flush_buffer(buffer, buffer_counter);
+		}
 	}
 
 	while (n > 0)
@@ -104,8 +120,13 @@ int print_an_int(va_list *args)
 
 	for (j = i - 1; j >= 0; j--)
 	{
-		write(1, &digits[j], 1);
+		buffer[*buffer_counter] = digits[j];
+		(*buffer_counter)++;
 		len++;
+		if (*buffer_counter == 1024)
+		{
+			flush_buffer(buffer, buffer_counter);
+		}
 	}
 	return (len);
 }
@@ -116,16 +137,22 @@ int print_an_int(va_list *args)
  * Return: int length
  */
 
-int print_binary(va_list *args)
+int print_binary(va_list *args, char *buffer, int *buffer_counter)
 {
 	unsigned int n = va_arg(*args, unsigned int);
-	char digits[32];
+	char digits[sizeof(unsigned int) * 8];
 	int i = 0, j, len = 0;
 
 	if (n == 0)
 	{
-		write(1, "0", 1);
-		return (1);
+		buffer[*buffer_counter] = '0';
+                (*buffer_counter)++;
+                if (*buffer_counter == 1024)
+                {
+                        flush_buffer(buffer, buffer_counter);
+                }
+                len++;
+                return (len);
 	}
 
 	while (n > 0)
@@ -136,8 +163,14 @@ int print_binary(va_list *args)
 	}
 	for (j = i - 1; j >= 0; j--)
 	{
-		write(1, &digits[j], 1);
-		len++;
+		
+		buffer[*buffer_counter] = digits[j];
+                (*buffer_counter)++;
+                len++;
+                if (*buffer_counter == 1024)
+                {
+                        flush_buffer(buffer, buffer_counter);
+                }
 	}
 	return (len);
 }
